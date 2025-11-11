@@ -1,0 +1,6 @@
+@QuizNiti.API_HostAddress = http://localhost:5209
+
+GET {{QuizNiti.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

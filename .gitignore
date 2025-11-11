@@ -361,3 +361,25 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+
+
+
+# .NET build folders
+**/bin/
+**/obj/
+**/.vs/
+*.user
+*.suo
+
+# Logs
+*.log
+
+# Database files
+*.mdf
+*.ldf
+*.db
+
+# Angular (future)
+**/node_modules/
+**/dist/

@@ -27,5 +27,8 @@ namespace QuizNiti.API.Models
         public string  Difficulty { get; set; }  = string.Empty;
         public string Topic { get; set; } = string.Empty;
         public DateTime DateCreated { get; set; } = DateTime.UtcNow;
+
+        [MaxLength(5000)]
+        public string DidYouKnow { get; set; } = string.Empty;
     }
 }

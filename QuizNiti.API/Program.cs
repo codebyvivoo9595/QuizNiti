@@ -1,6 +1,7 @@
 
 using Microsoft.EntityFrameworkCore;
 using QuizNiti.API.Data;
+using QuizNiti.API.Services;
 
 namespace QuizNiti.API
 {
@@ -18,9 +19,12 @@ namespace QuizNiti.API
             builder.Services.AddSwaggerGen();
 
 
-            // Add Local Database Context here 
+            // Added Local Database Context here 
             builder.Services.AddDbContext<QuizNitiContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+            // Added AI Service Here with Dependency Injection 
+            builder.Services.AddScoped<AiService>();
 
             var app = builder.Build();
 

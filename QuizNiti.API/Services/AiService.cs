@@ -1,4 +1,6 @@
-﻿using QuizNiti.API.Data;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.IdentityModel.Tokens;
+using QuizNiti.API.Data;
 using QuizNiti.API.Models;
 using System.Net.Http.Headers;
 using System.Text.Json;
@@ -13,11 +15,16 @@ namespace QuizNiti.API.Services
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _config;
 
+        readonly string? hfToken ;
+
         public AiService(QuizNitiContext db, HttpClient httpClient, IConfiguration config)
         {
             _db = db;
             _httpClient = httpClient;
             _config = config;
+
+             hfToken = Environment.GetEnvironmentVariable("HF_TOKEN")
+              ?? _config["AISettings:HuggingFaceToken"];
         }
 
         public async Task<List<Questions>> AIWillGenerateQuestionsAsync(string topic, string difficulty, int count)
@@ -58,7 +65,7 @@ namespace QuizNiti.API.Services
             else 
             {
                 // Use HuggingFace for Cloud-Based AI Model Hosting for server side calls it is Free
-                aiResponse = await Call_ServerSide_HuggingFaceAsync(prompt);
+                aiResponse = await Call_HuggingFace_API_Async(prompt);
             }
 
 
@@ -116,20 +123,45 @@ namespace QuizNiti.API.Services
 
         }
 
-        private async Task<string> Call_ServerSide_HuggingFaceAsync(string prompt)
+        private async Task<string> Call_HuggingFace_API_Async(string prompt)
         {
             var url = _config["AISettings:HuggingFaceUrl"];
-            var token = _config["AISettings:HuggingFaceApiKey"];
-            _httpClient.DefaultRequestHeaders.Authorization =
-               new AuthenticationHeaderValue("Bearer", token);
+            var token = _config["AISettings:HuggingFaceApiKey"]?? hfToken;
 
-            var response = await _httpClient.PostAsJsonAsync(url, new
-            {
-                inputs = prompt
-            });
+
+            if (string.IsNullOrWhiteSpace(url))
+                throw new Exception("HuggingFace API URL is missing from configuration.");
+
+            if (string.IsNullOrWhiteSpace(token))
+                throw new Exception("HuggingFace API token is not configured. Set it using user-secrets or environment variables.");
+
+
+
+            //_httpClient.DefaultRequestHeaders.Authorization =
+            //   new AuthenticationHeaderValue("Bearer", token);
+
+            //var response = await _httpClient.PostAsJsonAsync(url, new
+            //{
+            //    inputs = prompt
+            //});
+
+            //if (!response.IsSuccessStatusCode)
+            //    throw new Exception("HuggingFace AI model failed to generate questions.");
+
+            //return await response.Content.ReadAsStringAsync();
+
+
+            using var request = new HttpRequestMessage(HttpMethod.Post, url);
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            request.Content = JsonContent.Create(new { inputs = prompt });
+
+            var response = await _httpClient.SendAsync(request);
 
             if (!response.IsSuccessStatusCode)
-                throw new Exception("HuggingFace AI model failed to generate questions.");
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                throw new Exception($"HuggingFace AI model failed to generate questions. Response: {error}");
+            }
 
             return await response.Content.ReadAsStringAsync();
 

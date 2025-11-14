@@ -24,7 +24,7 @@ namespace QuizNiti.API
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             // Added AI Service Here with Dependency Injection 
-            builder.Services.AddScoped<AiService>();
+            builder.Services.AddHttpClient<AiService>();
 
             var app = builder.Build();
 

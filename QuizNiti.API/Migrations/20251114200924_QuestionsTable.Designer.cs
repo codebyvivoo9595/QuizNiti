@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using QuizNiti.API.Data;
 
@@ -11,9 +12,11 @@ using QuizNiti.API.Data;
 namespace QuizNiti.API.Migrations
 {
     [DbContext(typeof(QuizNitiContext))]
-    partial class QuizNitiContextModelSnapshot : ModelSnapshot
+    [Migration("20251114200924_QuestionsTable")]
+    partial class QuestionsTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

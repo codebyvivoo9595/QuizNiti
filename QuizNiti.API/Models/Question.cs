@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace QuizNiti.API.Models
 {
@@ -8,6 +9,10 @@ namespace QuizNiti.API.Models
 
         [Required]
         public string QuestionText { get; set; } = string.Empty;
+
+        //We getting Response Options[A,B,C,D] to store temp. 
+        [NotMapped]
+        public List<string>? Options { get; set; }
 
         [Required]
         public string OptionA { get; set; } = string.Empty;
